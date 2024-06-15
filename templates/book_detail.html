@@ -1,0 +1,27 @@
+<!-- templates/book_detail.html -->
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block content %}
+<h1>{{ book.title }}</h1>
+<p><strong>Автор:</strong> {{ book.author }}</p>
+<p><strong>Издательство:</strong> {{ book.publisher }}</p>
+<p><strong>Год:</strong> {{ book.year }}</p>
+<p><strong>Описание:</strong> {{ book.description }}</p>
+<p><strong>Обложка:</strong> <img src="{{ url_for('static', filename='uploads/' + book.cover.file_name) }}" alt="Cover"></p>
+
+<h2>Рецензии</h2>
+<ul>
+    {% for review in reviews %}
+    <li>
+        <p><strong>{{ review.user.username }}</strong> ({{ review.rating }} / 5)</p>
+        <p>{{ review.review_text }}</p>
+    </li>
+    {% endfor %}
+</ul>
+
+{% if session.get('user_id') %}
+    <a href="{{ url_for('add_review_view', book_id=book.id) }}">Написать рецензию</a>
+{% endif %}
+{% endblock %}

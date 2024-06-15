@@ -1,0 +1,18 @@
+<!-- templates/edit_book.html -->
+{% extends "base.html" %}
+
+{% block title %}Редактировать книгу{% endblock %}
+
+{% block content %}
+<h1>Редактировать книгу</h1>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <p>{{ form.title.label }}<br>{{ form.title(size=32) }}</p>
+    <p>{{ form.description.label }}<br>{{ form.description(cols=40, rows=5) }}</p>
+    <p>{{ form.year.label }}<br>{{ form.year(size=4) }}</p>
+    <p>{{ form.publisher.label }}<br>{{ form.publisher(size=32) }}</p>
+    <p>{{ form.author.label }}<br>{{ form.author(size=32) }}</p>
+    <p>{{ form.pages.label }}<br>{{ form.pages(size=5) }}</p>
+    <p>{{ form.submit() }}</p>
+</form>
+{% endblock %}

@@ -1,0 +1,39 @@
+<!-- templates/index.html -->
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<h1>Список книг</h1>
+<ul>
+    {% for book in books.items %}
+    <li>
+        <a href="{{ url_for('book_detail', book_id=book.id) }}">{{ book.title }}</a>
+        <p>Жанры: {% for genre in book.genres %}{{ genre.name }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+        <p>Год: {{ book.year }}</p>
+        <p>Средняя оценка: {{ book.reviews | map(attribute='rating') | sum | float / (book.reviews | length) if book.reviews | length > 0 else 0 }}</p>
+        <p>Количество рецензий: {{ book.reviews | length }}</p>
+        <a href="{{ url_for('book_detail', book_id=book.id) }}">Просмотр</a>
+        {% if session.get('role') in ['Администратор', 'Модератор'] %}
+            <a href="{{ url_for('edit_book_view', book_id=book.id) }}">Редактировать</a>
+        {% endif %}
+        {% if session.get('role') == 'Администратор' %}
+            <form action="{{ url_for('delete_book_view', book_id=book.id) }}" method="post" style="display:inline;">
+                <button type="submit" onclick="return confirm('Вы уверены, что хотите удалить книгу {{ book.title }}?')">Удалить</button>
+            </form>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+<div>
+    {% if books.has_prev %}
+        <a href="{{ url_for('index', page=books.prev_num) }}">Предыдущая</a>
+    {% endif %}
+    {% if books.has_next %}
+        <a href="{{ url_for('index', page=books.next_num) }}">Следующая</a>
+    {% endif %}
+</div>
+{% if session.get('role') == 'Администратор' %}
+    <a href="{{ url_for('add_book_view') }}">Добавить книгу</a>
+{% endif %}
+{% endblock %}

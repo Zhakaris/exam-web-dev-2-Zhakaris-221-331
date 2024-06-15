@@ -1,0 +1,14 @@
+<!-- templates/review_form.html -->
+{% extends "base.html" %}
+
+{% block title %}Добавить рецензию{% endblock %}
+
+{% block content %}
+<h1>Добавить рецензию</h1>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <p>{{ form.rating.label }}<br>{{ form.rating() }}</p>
+    <p>{{ form.review_text.label }}<br>{{ form.review_text(cols=40, rows=5) }}</p>
+    <p>{{ form.submit() }}</p>
+</form>
+{% endblock %}

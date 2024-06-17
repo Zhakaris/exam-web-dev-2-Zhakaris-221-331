@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Add Review{% endblock %}
+{% block content %}
+  <h1>Add Review</h1>
+  <form method="POST" action="{{ url_for('main.add_review', book_id=book_id) }}">
+    {{ form.hidden_tag() }}
+    <p>
+      {{ form.rating.label }}<br>
+      {{ form.rating() }}
+    </p>
+    <p>
+      {{ form.text.label }}<br>
+      {{ form.text(rows=5) }}
+    </p>
+    <p>{{ form.submit() }}</p>
+  </form>
+{% endblock %}

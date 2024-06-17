@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+  <h1 class="mt-4">List of Books</h1>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Genres</th>
+        <th>Year</th>
+        <th>Average Rating</th>
+        <th>Reviews Count</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for book in books %}
+      <tr>
+        <td>{{ book.title }}</td>
+        <td>
+          {% for genre in book.genres %}
+            {{ genre.name }}{% if not loop.last %}, {% endif %}
+          {% endfor %}
+        </td>
+        <td>{{ book.year }}</td>
+        <td>
+          {% if book.reviews|length > 0 %}
+            {{ book.reviews | map(attribute='rating') | sum / book.reviews | length }}
+          {% else %}
+            No reviews
+          {% endif %}
+        </td>
+        <td>{{ book.reviews | length }}</td>
+        <td>
+          <a class="btn btn-primary btn-sm" href="{{ url_for('main.book_detail', id=book.id) }}">View</a>
+          {% if current_user.is_authenticated and (current_user.has_role('Администратор') or current_user.has_role('Модератор')) %}
+            <a class="btn btn-secondary btn-sm" href="{{ url_for('main.edit_book', id=book.id) }}">Edit</a>
+          {% endif %}
+          {% if current_user.is_authenticated and current_user.has_role('Администратор') %}
+            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-book-id="{{ book.id }}" data-book-title="{{ book.title }}">Delete</button>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-between">
+    {% if prev_url %}
+      <a class="btn btn-outline-primary" href="{{ prev_url }}">Previous</a>
+    {% endif %}
+    {% if next_url %}
+      <a class="btn btn-outline-primary" href="{{ next_url }}">Next</a>
+    {% endif %}
+  </div>
+
+  {% if current_user.is_authenticated and current_user.has_role('Администратор') %}
+    <a class="btn btn-success mt-3" href="{{ url_for('main.add_book') }}">Add Book</a>
+  {% endif %}
+
+  <!-- Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Удаление книги</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Вы уверены, что хотите удалить книгу <span id="modal-book-title"></span>?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Нет</button>
+          <form id="delete-form" method="POST" style="display:inline;">
+            <input type="hidden" name="_method" value="DELETE">
+            <button type="submit" class="btn btn-danger">Да</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      var bookId = button.getAttribute('data-book-id');
+      var bookTitle = button.getAttribute('data-book-title');
+      var modalTitle = deleteModal.querySelector('#modal-book-title');
+      modalTitle.textContent = bookTitle;
+
+      var deleteForm = deleteModal.querySelector('#delete-form');
+      deleteForm.action = '/delete_book/' + bookId;
+    });
+  </script>
+{% endblock %}

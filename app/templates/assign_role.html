@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Assign Role{% endblock %}
+{% block content %}
+  <h1>Assign Role</h1>
+  <form method="POST" action="{{ url_for('main.assign_role') }}">
+    {{ form.hidden_tag() }}
+    <p>
+      {{ form.username.label }}<br>
+      {{ form.username(size=32) }}
+    </p>
+    <p>
+      {{ form.role.label }}<br>
+      {{ form.role() }}
+    </p>
+    <p>{{ form.submit() }}</p>
+  </form>
+{% endblock %}
